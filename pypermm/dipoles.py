@@ -6,26 +6,16 @@ dipole moments based on local chemical environment, and detecting
 intramolecular hydrogen bonds.
 """
 
-from __future__ import annotations
-
 import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import numpy as np
 
+from .atoms import Atom
 from .constants import ASAREF_CUT
 from .math_utils import distance
-
-if TYPE_CHECKING:
-    from .atoms import Atom
-
-
-# =============================================================================
-# DIPOLE TABLE
-# =============================================================================
 
 
 @dataclass
@@ -33,24 +23,24 @@ class DipoleTable:
     """
     Dipole assignment lookup tables.
 
-    Contains two tables for dipole assignment: tab1 for pattern-based
+    Contains two tables for dipole assignment: table1 for pattern-based
     assignment where the center atom and specific neighbors define the
-    dipole distribution, and tab2 for simple neighbor-based assignment.
+    dipole distribution, and table2 for simple neighbor-based assignment.
 
-    :param tab1_center: atom types for center atoms in pattern matching
-    :param tab1_neighbors: required neighbor types for each pattern (4 slots, 0=empty)
-    :param tab1_dipoles: dipole values assigned to matched neighbors
-    :param tab2_center: atom types for simple matching
-    :param tab2_neighbors: required neighbor types for simple matching
-    :param tab2_dipole: dipole value for the center atom
+    :param table1_center: atom types for center atoms in pattern matching
+    :param table1_neighbors: required neighbor types for each pattern (4 slots, 0=empty)
+    :param table1_dipoles: dipole values assigned to matched neighbors
+    :param table2_center: atom types for simple matching
+    :param table2_neighbors: required neighbor types for simple matching
+    :param table2_dipole: dipole value for the center atom
     """
 
-    tab1_center: list[int]
-    tab1_neighbors: list[list[int]]
-    tab1_dipoles: list[list[float]]
-    tab2_center: list[int]
-    tab2_neighbors: list[list[int]]
-    tab2_dipole: list[float]
+    table1_center: list[int]
+    table1_neighbors: list[list[int]]
+    table1_dipoles: list[list[float]]
+    table2_center: list[int]
+    table2_neighbors: list[list[int]]
+    table2_dipole: list[float]
 
 
 def read_dipole_lib_json(filepath: str | Path) -> DipoleTable:
@@ -63,41 +53,36 @@ def read_dipole_lib_json(filepath: str | Path) -> DipoleTable:
     with open(filepath) as f:
         data = json.load(f)
 
-    tab1_center = []
-    tab1_neighbors = []
-    tab1_dipoles = []
+    table1_center = []
+    table1_neighbors = []
+    table1_dipoles = []
 
     for entry in data["tab1"]:
-        tab1_center.append(entry["center"])
-        tab1_neighbors.append(entry["neighbors"])
+        table1_center.append(entry["center"])
+        table1_neighbors.append(entry["neighbors"])
         # Pad dipoles to 4 values (original format had implicit 4th value of 0.0)
         dipoles = entry["dipoles"]
         if len(dipoles) < 4:
             dipoles = dipoles + [0.0] * (4 - len(dipoles))
-        tab1_dipoles.append(dipoles)
+        table1_dipoles.append(dipoles)
 
-    tab2_center = []
-    tab2_neighbors = []
-    tab2_dipole = []
+    table2_center = []
+    table2_neighbors = []
+    table2_dipole = []
 
     for entry in data["tab2"]:
-        tab2_center.append(entry["center"])
-        tab2_neighbors.append(entry["neighbors"])
-        tab2_dipole.append(entry["dipole"])
+        table2_center.append(entry["center"])
+        table2_neighbors.append(entry["neighbors"])
+        table2_dipole.append(entry["dipole"])
 
     return DipoleTable(
-        tab1_center=tab1_center,
-        tab1_neighbors=tab1_neighbors,
-        tab1_dipoles=tab1_dipoles,
-        tab2_center=tab2_center,
-        tab2_neighbors=tab2_neighbors,
-        tab2_dipole=tab2_dipole,
+        table1_center=table1_center,
+        table1_neighbors=table1_neighbors,
+        table1_dipoles=table1_dipoles,
+        table2_center=table2_center,
+        table2_neighbors=table2_neighbors,
+        table2_dipole=table2_dipole,
     )
-
-
-# =============================================================================
-# DIPOLE ASSIGNMENT
-# =============================================================================
 
 
 def assign_dipoles(atoms: list[Atom], dipole_table: DipoleTable) -> None:
@@ -157,11 +142,11 @@ def assign_dipoles(atoms: list[Atom], dipole_table: DipoleTable) -> None:
             if dist <= cutoff and len(nbdi[i]) < 4:
                 nbdi[i].append(j)
 
-    # Tab1 matching: functional group patterns
+    # table1 matching: functional group patterns
     for center, req_nb, dip_vals in zip(
-        dipole_table.tab1_center,
-        dipole_table.tab1_neighbors,
-        dipole_table.tab1_dipoles,
+        dipole_table.table1_center,
+        dipole_table.table1_neighbors,
+        dipole_table.table1_dipoles,
         strict=True,
     ):
         for i in range(nat):
@@ -188,15 +173,15 @@ def assign_dipoles(atoms: list[Atom], dipole_table: DipoleTable) -> None:
                         heavy[nb_idx].dipole = dip_val
                         heavy[nb_idx].asaref = ASAREF_CUT
 
-    # Tab2 matching: simple coordination patterns
+    # table2 matching: simple coordination patterns
     for i in range(nat):
         if heavy[i].dipole != 0.0:
             continue
 
         for center, req_nb, dip_val in zip(
-            dipole_table.tab2_center,
-            dipole_table.tab2_neighbors,
-            dipole_table.tab2_dipole,
+            dipole_table.table2_center,
+            dipole_table.table2_neighbors,
+            dipole_table.table2_dipole,
             strict=True,
         ):
             if iatdi[i] != center:

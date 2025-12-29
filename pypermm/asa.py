@@ -5,15 +5,11 @@ This module implements the Shrake-Rupley algorithm for computing
 solvent-accessible surface area of atoms in a molecule.
 """
 
-from __future__ import annotations
-
 import math
-from typing import TYPE_CHECKING
 
 import numpy as np
 
-if TYPE_CHECKING:
-    from .atoms import Atom
+from .atoms import Atom
 
 
 def calculate_asa(

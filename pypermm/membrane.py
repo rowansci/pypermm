@@ -6,8 +6,6 @@ of the lipid bilayer membrane, including atom-type-specific solvation
 energies, dielectric environment, and hydrogen bonding capacity profiles.
 """
 
-from __future__ import annotations
-
 import math
 from dataclasses import dataclass
 

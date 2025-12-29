@@ -6,15 +6,9 @@ energies, geometric helpers for distance calculations, and element
 identification from atom names.
 """
 
-from __future__ import annotations
-
 import math
 
 from numpy.typing import NDArray
-
-# =============================================================================
-# DIELECTRIC RESPONSE FUNCTIONS
-# =============================================================================
 
 
 def dielectric_born_factor(eps1: float, eps2: float) -> float:
@@ -69,11 +63,6 @@ def dielectric_ionic_factor(eps1: float, eps2: float) -> float:
     return _response(eps1) - _response(eps2)
 
 
-# =============================================================================
-# GEOMETRY UTILITIES
-# =============================================================================
-
-
 def distance(xyz: NDArray, i: int, j: int) -> float:
     """
     Calculate Euclidean distance between two atoms.
@@ -85,11 +74,6 @@ def distance(xyz: NDArray, i: int, j: int) -> float:
     """
     d = xyz[:, i] - xyz[:, j]
     return math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2])
-
-
-# =============================================================================
-# ATOM NAME UTILITIES
-# =============================================================================
 
 
 def get_element(atom_name: str) -> str:

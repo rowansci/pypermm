@@ -6,27 +6,15 @@ converting atomic properties to efficient array format, finding optimal
 molecular orientation at each membrane depth, and computing energy profiles.
 """
 
-from __future__ import annotations
-
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.typing import NDArray
 
-from .atoms import _build_reference_set, _select_reference_by_polar_neighbors
+from .atoms import Atom, _build_reference_set, _select_reference_by_polar_neighbors
 from .math_utils import normalize_atom_name
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-    from .atoms import Atom
-    from .membrane import MembraneProfile
-
-
-# =============================================================================
-# PRE-COMPUTED ORIENTATION GRID
-# =============================================================================
+from .membrane import MembraneProfile
 
 
 def build_rotation_matrices(
@@ -93,16 +81,16 @@ class AtomArrays:
     :param reference_indices: indices of reference atoms used for centering
     """
 
-    xyz_centered: NDArray[np.float64]
-    rotated_z: NDArray[np.float64]
-    asa: NDArray[np.float64]
+    xyz_centered: NDArray[np.floating]
+    rotated_z: NDArray[np.floating]
+    asa: NDArray[np.floating]
     atom_type: NDArray[np.int32]
-    dipole: NDArray[np.float64]
-    asaref: NDArray[np.float64]
-    charge: NDArray[np.float64]
-    charge2: NDArray[np.float64]
-    eioniz: NDArray[np.float64]
-    hbond: NDArray[np.float64]
+    dipole: NDArray[np.floating]
+    asaref: NDArray[np.floating]
+    charge: NDArray[np.floating]
+    charge2: NDArray[np.floating]
+    eioniz: NDArray[np.floating]
+    hbond: NDArray[np.floating]
     active_indices: NDArray[np.int32]
     reference_indices: list[int]
 
@@ -175,11 +163,6 @@ def prepare_atom_arrays(
         active_indices=active_indices,
         reference_indices=reference_indices,
     )
-
-
-# =============================================================================
-# ORIENTATION SEARCH
-# =============================================================================
 
 
 def find_best_orientation_batch(

@@ -7,15 +7,9 @@ atomic solvation parameters, dielectric coefficients, and DOPC
 membrane geometry parameters.
 """
 
-from __future__ import annotations
-
 import math
 
 import numpy as np
-
-# =============================================================================
-# PHYSICAL CONSTANTS
-# =============================================================================
 
 LN10 = math.log(10.0)
 """Natural logarithm of 10, used for pH/pKa calculations."""
@@ -23,10 +17,6 @@ LN10 = math.log(10.0)
 ASAREF_CUT = 0.1
 """Cutoff for reference accessible surface area (Å²)."""
 
-
-# =============================================================================
-# ATOM TYPE PARAMETERS
-# =============================================================================
 
 VDW_RADII: dict[int, float] = {
     1: 1.88,  # sp3 carbon (aliphatic)
@@ -71,10 +61,6 @@ ASP_LIP: dict[int, float] = {
 """Atomic solvation parameters for lipid phase (kcal/mol/Å²)."""
 
 
-# =============================================================================
-# EMPIRICAL COEFFICIENTS
-# =============================================================================
-
 CFSIGMA = np.array(
     [
         -0.017,  # 0: C(sp3) constant
@@ -117,20 +103,12 @@ CFPOL = 0.001
 """Polarity correction coefficient for polar-adjacent carbons."""
 
 
-# =============================================================================
-# IONIZATION PARAMETERS
-# =============================================================================
-
 PKA_VALUES: dict[int, float] = {
     9: 4.5,  # Carboxylate (COO-)
     10: 9.5,  # Ammonium (NH3+)
 }
 """Reference pKa values for ionizable groups."""
 
-
-# =============================================================================
-# DOPC MEMBRANE PARAMETERS
-# =============================================================================
 
 DOPC: dict[str, np.ndarray | float] = {
     # Gaussian parameters for membrane regions

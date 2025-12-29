@@ -5,8 +5,6 @@ This module converts energy profiles to predicted permeability
 coefficients for various membrane systems.
 """
 
-from __future__ import annotations
-
 import math
 
 import numpy as np

@@ -6,24 +6,13 @@ atom type assignment based on connectivity, ionization state assignment
 based on pH, and reference atom selection for orientation.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.typing import NDArray
 
 from .constants import ASP_LIP, LN10, PKA_VALUES, VDW_RADII
 from .math_utils import distance
-
-if TYPE_CHECKING:
-    pass
-
-
-# =============================================================================
-# DATA STRUCTURES
-# =============================================================================
 
 
 @dataclass
@@ -76,11 +65,6 @@ class ReferenceSelection:
 
     indices: list[int] = field(default_factory=list)
     labels: list[str] = field(default_factory=list)
-
-
-# =============================================================================
-# ATOM TYPE ASSIGNMENT
-# =============================================================================
 
 
 def assign_atom_types(atoms: list[Atom]) -> None:
@@ -177,11 +161,6 @@ def assign_atom_types(atoms: list[Atom]) -> None:
             atom.solv = ASP_LIP[atom.atom_type]
 
 
-# =============================================================================
-# IONIZATION
-# =============================================================================
-
-
 def assign_ionization(
     atoms: list[Atom],
     pH: float,
@@ -224,11 +203,6 @@ def assign_ionization(
             atom.charge = +1.0
 
 
-# =============================================================================
-# REFERENCE ATOM SELECTION
-# =============================================================================
-
-
 def determine_reference_atoms(atoms: list[Atom]) -> ReferenceSelection:
     """
     Select reference atoms for defining molecular orientation.
@@ -244,6 +218,7 @@ def determine_reference_atoms(atoms: list[Atom]) -> ReferenceSelection:
     if not heavy:
         return ReferenceSelection()
 
+    print(np.array([[atom.x, atom.y, atom.z] for _, atom in heavy]))
     coords = np.array([[atom.x, atom.y, atom.z] for _, atom in heavy], dtype=np.float64).T
 
     preferred = _select_reference_by_polar_neighbors(heavy, coords)

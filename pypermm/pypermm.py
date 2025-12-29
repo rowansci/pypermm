@@ -8,8 +8,8 @@ the complete permeability calculation workflow.
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -24,9 +24,6 @@ from .orientation import (
     prepare_atom_arrays,
 )
 from .permeability import calculate_permeability
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -72,11 +69,11 @@ def run_permm(
     assign_ionization(atoms, ph, temperature, swpka)
 
     heavy = [a for a in atoms if a.atom_type != 21]
-    logger.info("%d heavy atoms", len(heavy))
+    logger.info(f"{len(heavy)} heavy atoms")
     types: dict[int, int] = {}
     for a in heavy:
         types[a.atom_type] = types.get(a.atom_type, 0) + 1
-    logger.debug("Atom types: %s", types)
+    logger.debug(f"Atom types: {types}")
 
     # Load and apply dipole library
     if dipole_lib_path is None:
@@ -87,26 +84,26 @@ def run_permm(
     if dipole_lib_path:
         dipole_table = read_dipole_lib_json(dipole_lib_path)
         assign_dipoles(atoms, dipole_table)
-        logger.debug("%d atoms with dipoles", sum(1 for a in heavy if a.dipole > 0))
+        logger.debug(f"{sum(1 for a in heavy if a.dipole > 0)} atoms with dipoles")
 
     # Detect intramolecular H-bonds (disabled if using pKa)
     assign_hbonds(atoms, enabled=not swpka)
 
     nhbond = sum(1 for a in heavy if a.hbond != 0)
     if nhbond > 0:
-        logger.debug("%d intramolecular H-bonds detected", nhbond)
+        logger.debug(f"{nhbond} intramolecular H-bonds detected")
 
     # Calculate accessible surface area
     calculate_asa(atoms)
     asatot = sum(a.asa for a in heavy)
-    logger.info("Total ASA: %.2f Å²", asatot)
+    logger.info(f"Total ASA: {asatot:.2f} Å²")
 
     # Determine reference atoms for orientation
     selection = None
     if reference_atoms is None:
         selection = determine_reference_atoms(atoms)
 
-    logger.info("Building membrane profile (thickness=%.1f Å)...", dmembr)
+    logger.info(f"Building membrane profile (thickness={dmembr:.1f} Å)...")
     profile = build_membrane_profile(dmembr)
 
     logger.debug("Pre-computing atom arrays...")
@@ -116,9 +113,9 @@ def run_permm(
         reference_atom_names=reference_atoms,
     )
     if selection and selection.labels:
-        logger.debug("Reference atoms: %s", ", ".join(selection.labels[:4]))
-    logger.debug("%d atoms with non-zero ASA", len(arrays.active_indices))
-    logger.debug("%d orientations per z-position", N_ORIENT)
+        logger.debug(f"Reference atoms: {', '.join(selection.labels[:4])}")
+    logger.debug(f"{len(arrays.active_indices)} atoms with non-zero ASA")
+    logger.debug(f"{N_ORIENT} orientations per z-position")
 
     logger.info("Finding optimal binding position...")
 
@@ -131,19 +128,19 @@ def run_permm(
             best_energy = e
             best_shift = shift
 
-    logger.info("Binding: E=%.2f kcal/mol at z=%.1f Å", best_energy, best_shift)
+    logger.info(f"Binding: E={best_energy:.2f} kcal/mol at z={best_shift:.1f} Å")
     logger.info("Computing energy profile...")
 
     # Full energy profile
     z_vals, energies = compute_energy_profile(arrays, profile)
     perm = calculate_permeability(z_vals, energies, asatot)
 
-    logger.info("ΔGbind: %.2f kcal/mol", perm["E_bind"])
-    logger.info("logP BLM: %.2f", perm["logP_BLM"])
-    logger.info("logP PAMPA: %.2f", perm["logP_PAMPA"])
-    logger.info("logP Plasma: %.2f", perm["logP_plasma"])
-    logger.info("logP Caco-2: %.2f", perm["logP_Caco2"])
-    logger.info("logP BBB: %.2f", perm["logP_BBB"])
+    logger.info(f"ΔGbind: {perm['E_bind']:.2f} kcal/mol")
+    logger.info(f"logP BLM: {perm['logP_BLM']:.2f}")
+    logger.info(f"logP PAMPA: {perm['logP_PAMPA']:.2f}")
+    logger.info(f"logP Plasma: {perm['logP_plasma']:.2f}")
+    logger.info(f"logP Caco-2: {perm['logP_Caco2']:.2f}")
+    logger.info(f"logP BBB: {perm['logP_BBB']:.2f}")
 
     return {
         "atoms": atoms,
