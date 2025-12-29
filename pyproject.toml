@@ -20,6 +20,9 @@ dev = [
     "ty>=0.0.1a25",
 ]
 
+[tool.setuptools.package-data]
+pypermm = ["*.json"]
+
 [tool.ruff]
 line-length = 120
 
