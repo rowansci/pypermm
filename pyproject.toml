@@ -9,6 +9,7 @@ requires-python = ">=3.13"
 dependencies = [
     "numpy==2.*",
 ]
+license = "MIT"
 
 [dependency-groups]
 dev = [
