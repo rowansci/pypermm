@@ -1,11 +1,11 @@
 [project]
 name = "pypermm"
 description = "pypermm"
-version = "0.0.1"
+version = "0.0.2"
 readme = "README.md"
 keywords = []
 authors = [{name = "Corin Wagen"}]
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "numpy==2.*",
 ]
