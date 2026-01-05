@@ -201,11 +201,6 @@ def assign_dipoles(atoms: list[Atom], dipole_table: DipoleTable) -> None:
             heavy[i].asaref = ASAREF_CUT
 
 
-# =============================================================================
-# HYDROGEN BOND DETECTION
-# =============================================================================
-
-
 def assign_hbonds(atoms: list[Atom], enabled: bool = True) -> None:
     """
     Detect intramolecular hydrogen bonds.

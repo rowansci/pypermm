@@ -20,8 +20,6 @@ from .membrane import MembraneProfile, clear_profile_cache
 from .orientation import AtomArrays
 from .pypermm import run_permm
 
-__version__ = "0.1.0"
-
 __all__ = [
     # Main function
     "run_permm",

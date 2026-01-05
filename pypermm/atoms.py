@@ -218,7 +218,6 @@ def determine_reference_atoms(atoms: list[Atom]) -> ReferenceSelection:
     if not heavy:
         return ReferenceSelection()
 
-    print(np.array([[atom.x, atom.y, atom.z] for _, atom in heavy]))
     coords = np.array([[atom.x, atom.y, atom.z] for _, atom in heavy], dtype=np.float64).T
 
     preferred = _select_reference_by_polar_neighbors(heavy, coords)

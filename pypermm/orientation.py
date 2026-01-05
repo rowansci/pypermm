@@ -57,11 +57,6 @@ ROT_Z, PHI_FLAT, THETA_FLAT = build_rotation_matrices(2.0)
 N_ORIENT = len(PHI_FLAT)
 
 
-# =============================================================================
-# ATOM ARRAYS
-# =============================================================================
-
-
 @dataclass
 class AtomArrays:
     """
