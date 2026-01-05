@@ -10,7 +10,7 @@
 ## About
 This code is a Python-based reimplementation of the PerMM library written by Andrei Lomize and Alexey Kovalenko. The original code can be found [here](https://cggit.cc.lehigh.edu/biomembhub/permm_server_code). This code has been relicensed with the permission of the original authors.
 
-If you use pypermm, please cite (the original PerMM publication)[https://pubs.acs.org/doi/10.1021/acs.jcim.9b00225].
+If you use pypermm, please cite [the original PerMM publication](https://pubs.acs.org/doi/10.1021/acs.jcim.9b00225).
 
 ## Usage 
 
