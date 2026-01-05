@@ -14,6 +14,10 @@ PyPermm is a Python-based reimplementation of the PerMM library written by Andre
 
 If you use pypermm, please cite [the original PerMM publication](https://pubs.acs.org/doi/10.1021/acs.jcim.9b00225).
 
+## Installation
+
+Simply run `uv pip install pypermm`, `pixi add --pypi pypermm`, or `pip install pypermm`.
+
 ## Usage 
 
 PyPermm primarily exposes a single function, `run_permm`, which takes a list of atomic symbols and a list of atomic coordinates (in Å). 
